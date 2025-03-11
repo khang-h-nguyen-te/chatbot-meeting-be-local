@@ -35,7 +35,7 @@ class AgentRag:
             llm=self.gpt4_llm,
             memory=memory,
             verbose=True
-            # , system_prompt=SYSTEM_TEMPLATE
+            , system_prompt=SYSTEM_TEMPLATE
         )
 
     def agent_query(self, query: str) -> str:
