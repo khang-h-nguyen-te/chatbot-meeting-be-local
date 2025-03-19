@@ -15,7 +15,7 @@ class AgentRag:
     def __init__(self, history_module: HistoryModule):
         self.OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
         self.qa_template = PromptTemplate(SYSTEM_TEMPLATE)
-        self.gpt4_llm = OpenAI(model="gpt-4")
+        self.gpt4_llm = OpenAI(model="gpt-4o")
         self.vector_store = None
         self.vector_search_tool = None
         self.agent = None
