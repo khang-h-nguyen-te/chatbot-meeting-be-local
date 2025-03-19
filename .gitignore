@@ -172,3 +172,7 @@ cython_debug/
 
 */.DS_Store
 *.json
+.qodo
+load_data copy.ipynb
+load_data copy 2.ipynb
+/data
