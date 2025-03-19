@@ -38,7 +38,7 @@ class SupabaseVectorStore:
         """
         Perform a hybrid search on the content.
         """
-        response = self.client.rpc("hybrid_search_meetings", {
+        response = self.client.rpc("hybrid_search_meetings_v2", {
             "query_text": query_text,
             "query_embedding": query_embedding,
             # "user_id_input": user_id,
