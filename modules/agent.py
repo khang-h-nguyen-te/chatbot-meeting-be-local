@@ -28,7 +28,7 @@ class AgentRag:
             fn=self.vector_store.supabase_vector_search_tool,
             description="Search for relevant meetings. Returns documents formatted from a list of dictionaries."
         )
-        memory = ChatMemoryBuffer.from_defaults(token_limit=8000)
+        memory = ChatMemoryBuffer.from_defaults(token_limit=100000)
 
         self.agent = OpenAIAgent.from_tools(
             tools=[self.vector_search_tool],
