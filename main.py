@@ -4,63 +4,52 @@ from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from modules.agent import AgentRag
-from supabase import create_client, Client
-import os
 import logging
-from llama_index.core.memory import (
-    VectorMemory,
-    SimpleComposableMemory,
-    ChatMemoryBuffer,
+
+# Import from our application structure
+from app.agent.agent_rag import AgentRag
+from app.models.request_models import QueryRequest, SignInRequest
+from app.utils.response_utils import create_response, validate_params
+from app.history.history_module import HistoryModule
+from app.config.supabase_config import get_supabase_client
+from app.config.env_config import config
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG if config.debug else logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# load_env()
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Import our HistoryModule
-from modules.history_module import HistoryModule
-
-
-app = FastAPI()
+# Create FastAPI app
+app = FastAPI(
+    title="Meeting Chatbot API",
+    description="API for interacting with the Meeting Chatbot",
+    version="1.0.0"
+)
 executor = ThreadPoolExecutor(max_workers=4)
 
-# Supabase API URL and keys
-SUPABASE_URL = os.environ.get("VITE_PUBLIC_BASE_URL")
-SUPABASE_KEY = os.environ.get("VITE_VITE_APP_SUPABASE_ANON_KEY")
-
-# Create Supabase clients
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Create Supabase client
+supabase = get_supabase_client()
 
 # Create a global HistoryModule instance
-chat_history_module = HistoryModule(token_limit=1500)
+chat_history_module = HistoryModule()  # Now uses config for token limit
 agent_initializer = AgentRag(history_module=chat_history_module)
 
-# Create logger for the FastAPI app.
+# Create logger for the FastAPI app
 logger = logging.getLogger(__name__)
-
-# Define the request payload schema.
-class QueryRequest(BaseModel):
-    query: str
-
-
-class SignInRequest(BaseModel):
-    email: str
-    password: str
-
-def create_response(message, status_code, error=False):
-    return {"message": message, "status_code": status_code, "error": error}
-
-def validate_params(params, required_params):
-    for param in required_params:
-        if param not in params:
-            return False
-    return True
 
 @app.post("/authenticate/{command}")
 async def authenticate(command: str, payload: SignInRequest):
+    """
+    Authenticate a user and initialize the agent.
+    
+    Args:
+        command: The authentication command to execute
+        payload: The authentication request payload
+    
+    Returns:
+        Authentication response with token
+    """
     params = payload.dict()
 
     if command == 'signInWithPassword':
@@ -72,42 +61,66 @@ async def authenticate(command: str, payload: SignInRequest):
                 'email': params['email'],
                 'password': params['password']
             })
-            agent_initializer.setup_agent( response.session.access_token)
-            print("Agent Initialized: ", agent_initializer.agent.chat_history)
+            agent_initializer.setup_agent(response.session.access_token)
+            logger.info(f"Agent initialized for user: {params['email']}")
             return create_response(response, 200)
         
         except Exception as e:
+            logger.error(f"Authentication error: {str(e)}")
             raise HTTPException(status_code=500, detail=str(e))
 
     else:
         raise HTTPException(status_code=404, detail=f"Authentication type '{command}' not recognized")
 
-
-# A helper function to process the query synchronously.
+# A helper function to process the query synchronously
 def process_query(query: str) -> str:
-
-        # query = "What is excerpt of the post Harnessing Data for Business Transformation"
-        response = agent_initializer.agent_query(query)
-
-        return response
+    """
+    Process a user query using the agent.
     
-
-# Define a POST endpoint to receive user queries.
+    Args:
+        query: The user's question
+    
+    Returns:
+        The agent's response
+    """
+    response = agent_initializer.agent_query(query)
+    return response
+    
+# Define a POST endpoint to receive user queries
 @app.post("/ask")
 async def ask_query(payload: QueryRequest, request: Request):
+    """
+    Process a user question and return the agent's response.
+    
+    Args:
+        payload: The query request containing the user question
+        request: The FastAPI request object
+    
+    Returns:
+        The agent's response
+    """
     query = payload.query
     headers = request.headers  
-    print(headers)
-    # Offload the blocking agent call to a thread pool to avoid blocking the event loop.
+    logger.debug(f"Processing query: {query}")
+    
+    # Offload the blocking agent call to a thread pool to avoid blocking the event loop
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(executor, process_query, query)
+    
     if not result:
-        raise HTTPException(status_code=500, detail=result)
+        raise HTTPException(status_code=500, detail="Failed to process query")
+    
     return {"response": result}
+
+# Add a simple health check endpoint
+@app.get("/health")
+async def health_check():
+    """Simple health check endpoint to verify the API is running."""
+    return {"status": "ok"}
 
 # ------------------------------------------------------------
 # Main Function
-# # ------------------------------------------------------------
-if __name__ == "__main__":
-    # Run the FastAPI app using uvicorn.
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# ------------------------------------------------------------
+# if __name__ == "__main__":
+#     # Run the FastAPI app using uvicorn
+#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True) 
