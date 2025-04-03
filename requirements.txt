@@ -3,3 +3,8 @@ supabase
 fastapi==0.115.8
 openai==1.59.3
 uvicorn==0.34.0
+pandas==2.2.1
+numpy==1.26.4
+pyairtable-3.0.2
+python-dotenv==1.0.1
+requests==2.31.0

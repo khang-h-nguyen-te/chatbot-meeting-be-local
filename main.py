@@ -46,7 +46,6 @@ class QueryRequest(BaseModel):
     query: str
 
 
-
 class SignInRequest(BaseModel):
     email: str
     password: str
@@ -109,6 +108,6 @@ async def ask_query(payload: QueryRequest, request: Request):
 # ------------------------------------------------------------
 # Main Function
 # # ------------------------------------------------------------
-# if __name__ == "__main__":
-#     # Run the FastAPI app using uvicorn.
-#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+if __name__ == "__main__":
+    # Run the FastAPI app using uvicorn.
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
