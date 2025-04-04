@@ -10,6 +10,7 @@ import logging
 from app.agent.agent_rag import AgentRag
 from app.models.request_models import QueryRequest, SignInRequest
 from app.utils.response_utils import create_response, validate_params
+from app.utils.crypto_utils import encrypt_password, decrypt_password
 from app.history.history_module import HistoryModule
 from app.config.supabase_config import get_supabase_client
 from app.config.env_config import config
@@ -57,9 +58,16 @@ async def authenticate(command: str, payload: SignInRequest):
             raise HTTPException(status_code=400, detail="Missing required parameters")
 
         try:
+            # Decrypt password if it's encrypted
+            try:
+                password = decrypt_password(params['password'])
+            except Exception:
+                # If decryption fails, use the password as is
+                password = params['password']
+                
             response = supabase.auth.sign_in_with_password({
                 'email': params['email'],
-                'password': params['password']
+                'password': password
             })
             agent_initializer.setup_agent(response.session.access_token)
             logger.info(f"Agent initialized for user: {params['email']}")
@@ -67,6 +75,32 @@ async def authenticate(command: str, payload: SignInRequest):
         
         except Exception as e:
             logger.error(f"Authentication error: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
+    
+    elif command == 'signUpWithPassword':
+        if not validate_params(params, ['email', 'password', 'display_name']):
+            raise HTTPException(status_code=400, detail="Missing required parameters")
+        
+        try:
+            # Decrypt password if it's encrypted
+            try:
+                password = decrypt_password(params['password'])
+            except Exception:
+                # If decryption fails, use the password as is
+                password = params['password']
+                
+            response = supabase.auth.sign_up({
+                'email': params['email'],
+                'password': password,
+            })
+
+            ## Not yet implemented set profile data
+
+            logger.info(f"User account created: {params['email']}")
+            return create_response(response, 200)
+        
+        except Exception as e:
+            logger.error(f"Sign up error: {str(e)}")
             raise HTTPException(status_code=500, detail=str(e))
 
     else:
@@ -121,6 +155,6 @@ async def health_check():
 # ------------------------------------------------------------
 # Main Function
 # ------------------------------------------------------------
-# if __name__ == "__main__":
-#     # Run the FastAPI app using uvicorn
-#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True) 
+if __name__ == "__main__":
+    # Run the FastAPI app using uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True) 

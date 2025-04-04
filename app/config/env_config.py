@@ -92,6 +92,11 @@ class AppConfig:
         """Get the token limit for chat memory."""
         return EnvConfig.get_int("MEMORY_TOKEN_LIMIT", 100000)
 
+    @property
+    def jwt_private_key(self) -> str:
+        """Get the JWT private key for password encryption."""
+        return EnvConfig.get_required("JWT_PRIVATE_KEY")
+
 
 # Create a singleton instance of the config
 config = AppConfig() 

@@ -70,7 +70,7 @@ To add a new tool:
 
 1. Create a new tool class that extends `BaseTool`
 2. Implement the `__call__` method to execute the tool's functionality
-3. Register the tool with the `ToolRegistry` in `agent_rag.py`
+3. Register the tool in `agent_rag.py`
 
 Example:
 

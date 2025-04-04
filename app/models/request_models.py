@@ -11,6 +11,7 @@ class SignInRequest(BaseModel):
     """Request model for the /authenticate endpoint."""
     email: str
     password: str
+    display_name: Optional[str] = None
 
 
 class APIResponse(BaseModel):

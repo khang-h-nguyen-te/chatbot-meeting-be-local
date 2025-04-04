@@ -32,14 +32,14 @@ def get_supabase_client(auth_header=None):
             credentials["key"], 
             options=ClientOptions(
                 headers={"Authorization": auth_header},
-                schema="dummy_schema",
+                # schema="dummy_schema",
             )
         )
     
     return create_client(
         credentials["url"], 
         credentials["key"],
-        options=ClientOptions(
-            schema="dummy_schema",
-        )
+        # options=ClientOptions(
+        #     schema="dummy_schema",
+        # )
     ) 

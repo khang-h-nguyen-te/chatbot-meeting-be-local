@@ -45,7 +45,7 @@ class SupabaseVectorStore:
         Returns:
             List of matching documents.
         """
-        response = self.client.rpc("hybrid_search_meetings_v2", {
+        response = self.client.rpc("hybrid_search_meetings", {
             "query_text": query_text,
             "query_embedding": query_embedding,
             # "user_id_input": user_id,
