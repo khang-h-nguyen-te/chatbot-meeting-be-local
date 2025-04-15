@@ -14,7 +14,7 @@ from app.services.embeddings import EmbeddingService
 from app.vectorstore.supabase_vectorstore import SupabaseVectorStore
 from app.tools.date.date_tool import DateExtractionTool
 from app.tools.organization.organization_tool import OrganizationValidationTool
-from app.tools.search.search_tools import SearchMeetingsTool, SearchMeetingsByOrganizationTool
+from app.tools.search.search_tools import SearchMeetingsTool, SearchMeetingsByOrganizationTool, RecentMeetingsSearchTool
 from app.config.env_config import config
 
 
@@ -119,6 +119,9 @@ class AgentRag:
             vector_store=self.vector_store,
             embedding_service=self.embedding_service
         )
+        recent_search_tool = RecentMeetingsSearchTool(
+            vector_store=self.vector_store
+        )
         
         # Create llama_index FunctionTool objects
         search_function_tool = FunctionTool.from_defaults(
@@ -131,6 +134,12 @@ class AgentRag:
             name=search_by_org_tool.name,
             description=search_by_org_tool.description,
             fn=search_by_org_tool.__call__
+        )
+        
+        recent_search_function_tool = FunctionTool.from_defaults(
+            name=recent_search_tool.name,
+            description=recent_search_tool.description,
+            fn=recent_search_tool.__call__
         )
         
         date_function_tool = FunctionTool.from_defaults(
@@ -153,6 +162,7 @@ class AgentRag:
             tools=[
                 search_function_tool,
                 search_by_org_function_tool,
+                recent_search_function_tool,
                 date_function_tool,
                 organization_function_tool
             ],
