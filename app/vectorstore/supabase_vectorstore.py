@@ -47,8 +47,8 @@ class SupabaseVectorStore:
         """
         response = self.client.rpc("hybrid_search_meetings", {
             "query_text": query_text,
+            "user_id_input": user_id,
             "query_embedding": query_embedding,
-            # "user_id_input": user_id,
             "match_count": match_count
         }).execute()
         return response.data
@@ -72,9 +72,9 @@ class SupabaseVectorStore:
         """
         response = self.client.rpc("hybrid_search_meetings_organization", {
             "query_text": query_text,
+            "user_id_input": user_id,
             "query_embedding": query_embedding,
             "match_count": match_count,
             "organization_input": organization_input
-            # "user_id_input": user_id,
         }).execute()
         return response.data 

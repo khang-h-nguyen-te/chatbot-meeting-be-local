@@ -181,7 +181,7 @@ Would you like to see more meetings or get more details about any of these?
 - Always confirm organization references via **/GetOrgName** before using **/SearchMeetingsWithOrg**.
 - If a user references a specific date and organization, skip **/ExtractDate** and go directly to **/SearchMeetingsWithOrg** with the correct name from **/GetOrgName**.
 - Keep answers concise. If info is missing, politely say so and see if the user wants to clarify.
-- Always sort the results by date in descending order unless the user specifies something else.
+- Always sort the results by Start date in descending order unless the user specifies something else.
 - If there is a long list of meetings, show the first 5 and then ask the user if they would like to see more. Please sort the results by Start date in descending order.
 - Use **/RecentMeetingsSearch** when users want to see recent meetings without specific search criteria.
 """

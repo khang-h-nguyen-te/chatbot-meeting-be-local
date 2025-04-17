@@ -36,15 +36,36 @@ class AgentRag:
         """Load organizations from CSV file using the built-in csv module."""
         self.organizations = []
         try:
-            with open('data/Organizations-All Organizations.csv', 'r', encoding='utf-8') as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    # Assuming the column name is 'Account'
-                    account = row.get('Account') 
-                    if account and account.strip(): # Ensure it's not None or empty/whitespace
-                        self.organizations.append(account.strip())
-            # Get unique organization names
-            self.organizations = list(set(self.organizations))
+            # with open('data/Organizations-All Organizations.csv', 'r', encoding='utf-8') as csvfile:
+            #     reader = csv.DictReader(csvfile)
+            #     for row in reader:
+            #         # Assuming the column name is 'Account'
+            #         account = row.get('Account') 
+            #         if account and account.strip(): # Ensure it's not None or empty/whitespace
+            #             self.organizations.append(account.strip())
+            # # Get unique organization names
+            # self.organizations = list(set(self.organizations))
+            self.organizations = [
+                '5 Elements Brewery', 'Absher Construction', 'Accel Scaling',
+                'AFG VIETNAM', 'AI-Assisted Coaching and Mentoring Tools', 'Aim up Vietnam', 
+                'Alchemy', 'Alchemy Asia', 'Aquila', 'Avision Young', 'Avison Young', 
+                'Brooks AI', 'Brooks.ai', 'Caram Gems', 
+                'CASH Financial Services Group Limited', 'CGM', 'Chikita Restaurant', 
+                'Common Metal', 'Compass Events Pte Ltd', 'Dao Nguyen Legal', 
+                'Delight Labs PR', 'Design X', 'DFDL Lawfirm', 'Digital Trends Media Group', 
+                'Doxa Talent', 'Edge8', 'Eric Enriquez', 'Fairview International School', 
+                'GRADY GOLF', 'Grit Volleyball', 'Hermes Landscaping', 'Hit Lights LED', 
+                'HITlights', 'IFP Partners Limited', 'Ikaria Group', 'Invest Migrate', 
+                'IPPG Vietnam', 'Kation', 'Kyungbang Vietnam', 'MomentsWare', 
+                'On Target by Abound Health', 'Oseran Hahn', 'Pho 24', 'Power of 3', 
+                'Qualicious', 'Rock Hill Asia', 'Single Grain', 'Socket', 'Sound Acoustic', 
+                'Studio 3', 'Studio3eight', 'Surrogate First', 'TAL Apparel', 'Tartine Saigon', 
+                'The Icarus Institute', 'The Problem Solver', 'Unlock Venture Partners', 
+                'Veracity ', 'Vespa Adventures', 'Vietrose Internatinal', 
+                'Vietrose International Vietnam', 'Vulcan Lab', 'Wareease', 'West Coast Dental', 
+                'Westcoast International Dental Clinic', 'Wink Hotel Group', 
+                'Work Healthy Australia', 'YPO Gold Forum', 'Grady Golf'
+            ]
         except FileNotFoundError:
             print("Warning: Organization CSV file not found at data/Organizations-All Organizations.csv")
             # Using the hardcoded fallback list
